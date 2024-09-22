@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import frc.robot.Constants;
-import frc.robot.Constants.ElevatorConstants;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import edu.wpi.first.math.util.Units;
@@ -13,16 +12,20 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 
 public class ElevatorSubsystem extends SubsystemBase {
-    private final CANSparkMax motor1;
+    private final CANSparkMax motor1; // Evan: Don't use number form when writing a variable name; use "motorOne"
 
 
   public ElevatorSubsystem() {
     motor1 = new CANSparkMax(Constants.ElevatorConstants.ElevatorMotorID, MotorType.kBrushless);
+    /* Evan:
+     * Importing a specific subclass means you can just pull a variable from that subclass using SUBCLASS.variable
+     * ^ This shortens how much you have to write when using a constantme math
+        */
 
     new Thread(() -> {
             try {
                 Thread.sleep(250);
-                motor1.setInverted(Constants.ElevatorConstants.ElevatorMotorInvert);
+                motor1.setInverted(Constants.ElevatorConstants.ElevatorMotorInvert); // Evan: Might need to be changed after testing
                 motor1.getEncoder().setPosition(Constants.ElevatorConstants.ElevatorMotorStartPosition);
 
               } catch (Exception e) {}
@@ -31,6 +34,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void setElevatorMotorSpeed(double speed, boolean ignoreBoundsRequirements) {
+    // Evan: This very much resembles the Jukebox.java code I had. There is no need for ignoreBoundsRequirements in this caseents) {
     if (checkElevatorMotorInvertsAreCorrect()) {
       if (checkElevatorMovementsAreValid(speed) || ignoreBoundsRequirements) {
         motor1.set(speed);
@@ -45,6 +49,17 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   public void brakeElevatorMotors(){
     motor1.set(0);
+
+
+    // Wait Evan i'm confused. idle mode is an object? how do I use it...
+    // It's a little bit of an odd one; don't worry too much about it for now
+    // Ok, wait, I think maybe there is some desync. It *appears* that you are breaking the code heavily on my side, but maybe that is just a me issue
+    // WDYM breaking? I just rewrote ".set(0);"
+    // In my perspective I see "motor1.set(0);set(0);"
+    // Evan: I will probably leave for now, given how I might be unintentionally breaking things
+    // Lukas: ok. I probably need to go to bed haha.
+
+    // Evan: Feel free to try using brake mode in the following line. I never decided to do it just in case...
   }
 
   public double getElevatorMotorPosition(){
@@ -53,13 +68,13 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
  
   public boolean checkElevatorMovementsAreValid(double speed) {
-    if (getElevatorMotorPosition() < ElevatorConstants.ElevatorMotorMinPosition) {
+    if (getElevatorMotorPosition() < Constants.ElevatorConstants.ElevatorMotorMinPosition) { // Evan: Since you just want to use Constants, the use of ElevatorConstants.variable need to be corrected
             if (speed > 0) {
                 return true;
             } else {
                 return false;
             }
-        } else if (getElevatorMotorPosition() > ElevatorConstants.ElevatorMotorMaxPosition) {
+        } else if (getElevatorMotorPosition() > Constants.ElevatorConstants.ElevatorMotorMaxPosition) {
             if (speed < 0) {
                 return true;
             } else {
